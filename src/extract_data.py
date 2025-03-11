@@ -1,18 +1,33 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+# import nltk
+from nltk.corpus import stopwords
 
+# nltk.download('stopwords')
 global_path = "../data/"
 
+def clean(data : pd.DataFrame) -> pd.DataFrame:
+    def clean_text(text : str) -> str:
+        stop = set(stopwords.words('english'))
+        text = ' '.join(word for word in text.split() if word not in stop)
+        return text
+
+    data['comment_text'] = data['comment_text'].map(lambda i : clean_text(i))
+    return data
+
 def extract(filename : str,) -> pd.DataFrame:
+    # Just grabs the data from a specified file
     global global_path
     return pd.read_csv(global_path + filename)
 
 def print_csv(data : pd.DataFrame, n_rows : int = 10) -> None:
+    # Prints out 10 rows if not specified otherwise
     pd.set_option('display.max_columns', 10)
     pd.set_option('display.width', 1000)
     print(data.head(n_rows))
 
-def plot_frequency(data : pd.DataFrame):
+def plot_frequency(data : pd.DataFrame) -> None:
+    # Plots both the number of each type of toxic comment and the non-toxic to toxic comment graphs
     frequency = {}
     for i in data.columns[2:]:
         frequency[i] = len(data[data[i] == 1])
@@ -34,5 +49,6 @@ def plot_frequency(data : pd.DataFrame):
 
 if __name__ == "__main__":
     train = extract("train.csv")
-    print_csv(train)
-    plot_frequency(train)
+    #print_csv(train)
+    #plot_frequency(train)
+    #train = clean(train)
