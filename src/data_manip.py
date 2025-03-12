@@ -56,5 +56,5 @@ def comment_length_all(data : pd.DataFrame) -> None:
 if __name__ == '__main__':
     train = extract_data.extract('train.csv')
     #train = extract_data.clean(train)
-    #most_common_all(train, (2, 2))
-    comment_length_all(train)
+    most_common_all(train, (2, 4))
+    #comment_length_all(train)
