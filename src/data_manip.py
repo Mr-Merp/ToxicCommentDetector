@@ -22,7 +22,7 @@ def most_common_ngram(data : pd.DataFrame, c_name : str, ngram_range : tuple, to
     temp = words_freq[:top]
     temp = pd.DataFrame(temp)
     temp.rename(columns={0: "Words", 1: "Count"}, inplace=True)
-    print(f"Top {top} {ngram_range[0]}-grams to {ngram_range[0]}-grams in {c_name}:")
+    print(f"Top {top} {ngram_range[0]}-grams to {ngram_range[1]}-grams in {c_name}:")
     print(temp.head(top))
 
 def most_common_all(data : pd.DataFrame, ngram_range: tuple, top : int = 10) -> None:
