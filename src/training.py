@@ -12,7 +12,7 @@ from imblearn.over_sampling import SMOTE
 
 
 def vectorize(data : pd.DataFrame, ngram_range : tuple = (1, 6)):
-    vec = TfidfVectorizer(
+    vec = TfidfVectorizer(ngram_range=ngram_range,
                           min_df=3, max_df=0.9, strip_accents='unicode', use_idf=True,
                           analyzer='word',
                           stop_words='english',
