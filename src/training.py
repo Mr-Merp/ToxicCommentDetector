@@ -12,7 +12,7 @@ from imblearn.over_sampling import SMOTE
 
 
 def vectorize(data : pd.DataFrame, ngram_range : tuple = (1, 6)):
-    vec = TfidfVectorizer(
+    vec = TfidfVectorizer(ngram_range=ngram_range,
                           min_df=3, max_df=0.9, strip_accents='unicode', use_idf=True,
                           analyzer='word',
                           stop_words='english',
@@ -46,12 +46,34 @@ def multioutput_classification(data: pd.DataFrame):
 
     print('------------------------------')
 
+    fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+    axes = axes.flatten()
+
+    for i, class_name in enumerate(class_names):
+        y_test_class = y_test[:, i]
+        y_pred_class = y_pred[:, i]
+
+        cm = confusion_matrix(y_test_class, y_pred_class)
+
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['Not ' + class_name, class_name],
+                    yticklabels=['Not ' + class_name, class_name], ax=axes[i])
+        axes[i].set_title(f'Confusion Matrix: {class_name}')
+        axes[i].set_xlabel('Predicted')
+        axes[i].set_ylabel('True')
+
+    plt.tight_layout()
+    plt.show()
+
 def logistic_regression(data : pd.DataFrame) -> list[LogisticRegression]:
     X = vectorize(data)
     scores = []
     classifiers = []
+    class_names = ["toxic","severe_toxic","obscene","threat","insult","identity_hate"]
 
-    for class_name in ["toxic","severe_toxic","obscene","threat","insult","identity_hate"]:
+    fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+    axes = axes.flatten()
+
+    for i, class_name in enumerate(class_names):
         X_train, X_test, y_train, y_test = train_test_split(X, data[class_name])
 
         classifier = LogisticRegression(C=0.1, solver='sag', max_iter=1000)
@@ -79,21 +101,19 @@ def logistic_regression(data : pd.DataFrame) -> list[LogisticRegression]:
         print('------------------------------')
 
         cm = confusion_matrix(y_test, y_pred)
-        print(f'Confusion Matrix for {class_name}:')
-        print(cm)
 
-        # Plot confusion matrix
-        plt.figure(figsize=(5, 4))
-        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=["Non-" + class_name, class_name],
-                    yticklabels=["Non-" + class_name, class_name])
-        plt.xlabel("Predicted Labels")
-        plt.ylabel("Actual Labels")
-        plt.title(f'Confusion Matrix for {class_name}')
-        plt.show()
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['Not ' + class_name, class_name],
+                    yticklabels=['Not ' + class_name, class_name], ax=axes[i])
+        axes[i].set_title(f'Confusion Matrix: {class_name}')
+        axes[i].set_xlabel('Predicted')
+        axes[i].set_ylabel('True')
+
+    plt.tight_layout()
+    plt.show()
 
     return classifiers
 
 
 if __name__ == "__main__":
     train = extract_data.extract("train.csv")
-    logistic_regression(train)
+    multioutput_classification(train)
